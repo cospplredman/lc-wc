@@ -28,7 +28,7 @@ document.body = un_cps(Body(
 					let editor = document.getElementById("editor");
 					let output = document.getElementById("output");
 
-					lc_print = (x) => output.innerText += x;
+					lc_print = (x) => output.textContent += x;
 
 					let src = editor.textContent;
 
@@ -59,6 +59,7 @@ document.body = un_cps(Body(
 	),
 	Scroll(all(
 		Rect("0%", "80% + 18px", "100%", "20% - 18px")(),
+		Class("IFont"),
 		Style({"background-color": "black", "color": "white"}),
 		Attr("id", "output")
 	))
