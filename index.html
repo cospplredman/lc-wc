@@ -28,7 +28,7 @@ document.body = un_cps(Body(
 					let editor = document.getElementById("editor");
 					let output = document.getElementById("output");
 
-					lc_print = (x) => output.textContent += x;
+					lc_print = (x) => output.innerText += x;
 
 					let src = editor.textContent;
 
