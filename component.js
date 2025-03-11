@@ -43,11 +43,24 @@ gen_rule(".Font::selection", {
 	"background-color": "black"
 });
 
+gen_rule(".IFont", {
+	"font-family": `"Nimbus Mono PS", monospace`,
+	"font-size": "12px",
+	"line-height": "14px",
+	"tab-size": "2"
+});
+
+gen_rule(".IFont::selection", {
+	"color": "black",
+	"background-color": "white"
+});
+
+
 gen_rule(".Rect", {
 	"max-width": "100%",
 	"max-height": "100%",
 	"position": "absolute",
-	"white-space": "wrap",
+	"white-space": "pre-wrap",
 	"word-break": "break-all",
 	"border": "0",
 	"margin": "0",
