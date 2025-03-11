@@ -31,8 +31,13 @@ gen_rule("body", {
 
 });
 
+gen_rule("@font-face", {
+	"font-family": "Preferred Font",
+	src: "url(fonts/NimbusMonoPS-Regular.otf)"
+});
+
 gen_rule(".Font", {
-	"font-family": `"Nimbus Mono PS", monospace`,
+	"font-family": `"Preferred Font", monospace`,
 	"font-size": "12px",
 	"line-height": "14px",
 	"tab-size": "2"
@@ -44,7 +49,7 @@ gen_rule(".Font::selection", {
 });
 
 gen_rule(".IFont", {
-	"font-family": `"Nimbus Mono PS", monospace`,
+	"font-family": `"Preferred Font", monospace`,
 	"font-size": "12px",
 	"line-height": "14px",
 	"tab-size": "2"
@@ -102,6 +107,11 @@ let Attr = (name, value) => to_cps((el) => {
 	return el;
 });
 
+let SetField = (name, value) => to_cps((el) => {
+	el[name] = value;
+	return el;
+});
+
 let EventListener = (name, cb) => to_cps((el) => {
 	el.addEventListener(name, cb);
 	return el;
@@ -152,8 +162,6 @@ let Text = (str) => all(
 
 
 let TextField = (x = "0%", y = "0%", w = "100%", h = "100%") => {
-	let undo_buf = [];
-
 	return all(
 		Rect(x, y, w, h)(),
 		Class("Font"),
