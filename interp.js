@@ -179,7 +179,8 @@ let lc_eval = (() => {
 							ret = step();
 					}
 				}catch (e){
-					next(null, e);
+					next(null, e.toString() + "\n");
+					return;
 				}
 
 				if(ret.length){
