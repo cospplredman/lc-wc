@@ -6,7 +6,7 @@
 <body></body>
 <script src="interp.js"></script>
 <script src="component.js"></script>
-<script type="text/javascript" src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+<script type="text/javascript" src="./node_modules/monaco-editor/min/vs/loader.js"></script>
 <script src="TedMonacoTheme.js"></script>
 <script>
 
@@ -74,24 +74,7 @@ document.body = un_cps(Body(
 ))()
 
 //stolen from stack overflow
-require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
-
-// Before loading vs/editor/editor.main, define a global MonacoEnvironment that overwrites
-// the default worker url location (used when creating WebWorkers). The problem here is that
-// HTML5 does not allow cross-domain web workers, so we need to proxy the instantiation of
-// a web worker through a same-domain script
-window.MonacoEnvironment = {
-	getWorkerUrl: function(workerId, label) {
-		return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
-	self.MonacoEnvironment = {
-	  baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
-	};
-	importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');`
-		)}`;
-	}
-};
-
-
+require.config({ paths: { 'vs': './node_modules/monaco-editor/min/vs' }});
 
 require(["vs/editor/editor.main"], function () {
 

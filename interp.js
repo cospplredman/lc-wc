@@ -46,7 +46,7 @@ let lc_eval = (() => {
 		: ret(null);
 
 	let Fail = (ret, call) => ([str, stack]) => ret(null);
-	let Either = a => b => c => (ret, call) => ([str, stack]) => call(a(c))(x => x == null ? call(b(c))(ret)([str, stack]) : ret(x))([str, stack]);
+	let Either = a => b => c => (ret, call) => ([str, stack]) => call(a(to_sm(I)))(x => x == null ? call(b(c))(ret)([str, stack]) : call(c)(ret)(x))([str, stack]);
 
 	let all = (...f) => f.reduce((f, g) => x => f(g(x)));
 	let some = (...f) => f.reduce((f, g) => Either(f)(g));
@@ -140,7 +140,7 @@ let lc_eval = (() => {
 		)),
 
 		print: b(1)(log(x => (lc_print(x), x))),
-		num: b(1)(BigInt),
+		num: b(1)(log(BigInt)),
 		char: b(1)((n) => String.fromCharCode(Number(n))),
 		"+": b(2)((a, b) => a + b),
 		"-": b(2)((a, b) => a - b),
