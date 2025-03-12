@@ -21,7 +21,7 @@ let lc_eval = (() => {
 		let step = step_machine(fn)(x);
 		let arg;
 		while((arg = step()).length == 0);
-		return nxt(arg);
+		return nxt(...arg);
 	}
 
 
@@ -139,7 +139,7 @@ let lc_eval = (() => {
 			)(x)
 		)),
 
-		print: b(1)(x => (lc_print(x), x)),
+		print: b(1)(log(x => (lc_print(x), x))),
 		num: b(1)(BigInt),
 		char: b(1)((n) => String.fromCharCode(Number(n))),
 		"+": b(2)((a, b) => a + b),
