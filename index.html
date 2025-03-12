@@ -3,9 +3,11 @@
 <head>
 	<title>lc</title>
 </head>
-<body>
+<body></body>
 <script src="interp.js"></script>
 <script src="component.js"></script>
+<script type="text/javascript" src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+<script src="TedMonacoTheme.js"></script>
 <script>
 
 let text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce efficitur, mi sed eleifend laoreet, neque magna scelerisque dui, nec pretium mi orci at nunc. Etiam tempus nulla non magna imperdiet, ac mollis sem elementum. Pellentesque sit amet felis vulputate diam tempus congue. Maecenas venenatis, neque elementum fermentum mollis, tortor velit venenatis ex, sed auctor mauris mauris et quam. Nam velit est, egestas sed fringilla hendrerit, vehicula non nunc. Nunc eget hendrerit dui. Ut ut feugiat lorem. Morbi dictum lacus sed justo maximus rhoncus. Mauris mollis ante a arcu sodales pulvinar. Donec at egestas lectus, quis interdum purus. Nam quis porttitor leo, sed rutrum mauris. Mauris ultrices mi vitae odio posuere hendrerit.`
@@ -14,24 +16,20 @@ let B1 = (...nd) => Border("1px", "black")(Border("1px", "white")(Border("2px", 
 
 document.body = un_cps(Body(
 	all(
-		Rect("0%", "0%", "100%", "80%")(B1(Scroll(all(
-			TextField(),
-			SetText(localStorage.getItem("lc-source") ?? ""),
+		Rect("0%", "0%", "100%", "80%")(B1(all(
+			Rect("0%", "0%", "100%", "100%")(),
 			Attr("id", "editor")
-		)))),
+		))),
 	),
 	all(
 		Rect("0%", "80%", "100%", "18px")(B1(
 			all(
 				Text("Run"),
 				EventListener("dblclick", (e) => {
-					let editor = document.getElementById("editor");
 					let output = document.getElementById("output");
-
 					lc_print = (x) => output.textContent += x;
 
-					let src = editor.textContent;
-
+					let src = monaco.editor.getEditors()[0].getValue();
 					localStorage.setItem("lc-source", src);
 
 					try{
