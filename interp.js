@@ -139,8 +139,8 @@ let lc_eval = (() => {
 			)(x)
 		)),
 
-		print: b(1)(log(x => (lc_print(x), x))),
-		num: b(1)(log(BigInt)),
+		print: b(1)(x => (lc_print(x), x)),
+		num: b(1)(BigInt),
 		char: b(1)((n) => String.fromCharCode(Number(n))),
 		"+": b(2)((a, b) => a + b),
 		"-": b(2)((a, b) => a - b),
