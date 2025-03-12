@@ -32,6 +32,11 @@ document.body = un_cps(Body(
 					let src = monaco.editor.getEditors()[0].getValue();
 					localStorage.setItem("lc-source", src);
 
+					if(state == 1){
+						lc_print("already running\n");
+						return;
+					}
+
 					state = 1;
 					lc_eval(src, () => state == 0, (result, error) => {
 						state = 0;
