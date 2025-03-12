@@ -76,6 +76,17 @@ document.body = un_cps(Body(
 //stolen from stack overflow
 require.config({ paths: { 'vs': './node_modules/monaco-editor/min/vs' }});
 
+window.MonacoEnvironment = {
+	getWorkerUrl: function(workerId, label) {
+		return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+	self.MonacoEnvironment = {
+	  baseUrl: 'https://cospplredman.github.io/lc-wc/node_modules/monaco-editor/min/'
+	};
+	importScripts('https://cospplredman.github.io/lc-wc/node_modules/monaco-editor/min/vs/base/worker/workerMain.js');`
+		)}`;
+	}
+};
+
 require(["vs/editor/editor.main"], function () {
 
 	let config = init_ted_theme();
