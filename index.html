@@ -10,9 +10,9 @@
 <script src="TedMonacoTheme.js"></script>
 <script>
 
-let text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce efficitur, mi sed eleifend laoreet, neque magna scelerisque dui, nec pretium mi orci at nunc. Etiam tempus nulla non magna imperdiet, ac mollis sem elementum. Pellentesque sit amet felis vulputate diam tempus congue. Maecenas venenatis, neque elementum fermentum mollis, tortor velit venenatis ex, sed auctor mauris mauris et quam. Nam velit est, egestas sed fringilla hendrerit, vehicula non nunc. Nunc eget hendrerit dui. Ut ut feugiat lorem. Morbi dictum lacus sed justo maximus rhoncus. Mauris mollis ante a arcu sodales pulvinar. Donec at egestas lectus, quis interdum purus. Nam quis porttitor leo, sed rutrum mauris. Mauris ultrices mi vitae odio posuere hendrerit.`
 
 let B1 = (...nd) => Border("1px", "black")(Border("1px", "white")(Border("2px", "white")(...nd)));
+let state = 0;
 
 document.body = un_cps(Body(
 	all(
@@ -32,18 +32,16 @@ document.body = un_cps(Body(
 					let src = monaco.editor.getEditors()[0].getValue();
 					localStorage.setItem("lc-source", src);
 
-					try{
-						let result = lc_eval(src, {});
-
+					state = 1;
+					lc_eval(src, () => state == 0, (result, error) => {
+						state = 0;
 						if(result == null)
-							lc_print("unable to parse\n");
+							lc_print(error ?? "unable to parse\n");
 						else
 							lc_print(result.toString() + "\n");
-					}catch (e) {
-						lc_print(e.toString() + "\n");
-					}
 
-					output.scrollTo(0, output.scrollHeight);
+						output.scrollTo(0, output.scrollHeight);
+					});
 				})
 			),
 			Rect("3em", "0%", "4em", "100%")(all(
@@ -51,6 +49,13 @@ document.body = un_cps(Body(
 				EventListener("dblclick", (e) => {
 					let output = document.getElementById("output");
 					output.textContent = "";
+				})
+			)),
+			Rect("7em", "0%", "4em", "100%")(all(
+				Text("Kill"),
+				EventListener("dblclick", (e) => {
+					let output = document.getElementById("output");
+					state = 0;
 				})
 			))
 		)),
@@ -61,8 +66,39 @@ document.body = un_cps(Body(
 		Style({"background-color": "black", "color": "white"}),
 		Attr("id", "output")
 	))
-))();
+))()
+
+//stolen from stack overflow
+require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
+
+// Before loading vs/editor/editor.main, define a global MonacoEnvironment that overwrites
+// the default worker url location (used when creating WebWorkers). The problem here is that
+// HTML5 does not allow cross-domain web workers, so we need to proxy the instantiation of
+// a web worker through a same-domain script
+window.MonacoEnvironment = {
+	getWorkerUrl: function(workerId, label) {
+		return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+	self.MonacoEnvironment = {
+	  baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
+	};
+	importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');`
+		)}`;
+	}
+};
+
+
+
+require(["vs/editor/editor.main"], function () {
+
+	let config = init_ted_theme();
+
+	monaco.editor.create(document.getElementById("editor"), {
+		value: localStorage.getItem("lc-source") ?? "",
+		...config,
+		fontFamily: "Preferred Font",
+		fontSize: "16px"
+	});
+});
 
 </script>
-</body>
 </html>

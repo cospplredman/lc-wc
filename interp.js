@@ -1,7 +1,7 @@
 let lc_print;
 
 let lc_eval = (() => {
-	let stack_machine = (fn) => (nxt) => (x) => {
+	let step_machine = (fn) => (nxt) => (x) => {
 		let stack, arg;
 
 		let ret = (x) => arg = x;
@@ -13,9 +13,17 @@ let lc_eval = (() => {
 
 		stack = [fn(ret, call)];
 		arg = x;
-		while(stack.length) stack.pop()(arg);
+
+		return () => stack.length ? (stack.pop()(arg), []) : [arg];
+	}
+
+	let stack_machine = (fn) => (nxt) => (x) => {
+		let step = step_machine(fn)(nxt)(x);
+		let arg;
+		while((arg = step()).length == 0);
 		return nxt(arg);
 	}
+
 
 	let sm_compose = (f, g) => (ret, call) => call(g)(call(f)(ret));
 	let sm_all = (...arr) => arr.reduce(sm_compose);
@@ -153,15 +161,42 @@ let lc_eval = (() => {
 	};
 
 
-	let lc_eval = (str) => {
-		let state = un_sm(lc_grammar(End)) ([to_cl(str), []]);
+	let lc_eval = (str, die = () => {}, end = () => {}) => {
 
-		if(state){
-			let tr = state[1][0](env);
-			return un_sm(lc_normal)(tr)
+		let runner = (step, die, next) => {
+			let eval_loop = () => {
+				if(die()){
+					next(null, "killed\n");
+					return;
+				}
+
+				let start = performance.now();
+				let ret = [];
+				
+				try{
+					while(ret.length == 0 && (performance.now() - start) < 16){
+						for(let i = 0; i < 10000 && ret.length == 0; i++)
+							ret = step();
+					}
+				}catch (e){
+					next(null, e);
+				}
+
+				if(ret.length){
+					next(...ret);
+				}else{
+					requestAnimationFrame(eval_loop);
+				}
+			};
+
+			eval_loop();
 		}
 
-		return null;
+
+		runner(step_machine(lc_grammar(End))(I) ([to_cl(str), []]), die, (state) => 
+			state
+				? runner(step_machine(lc_normal)(I)(state[1][0](env)), die, end)
+				: end(null));
 	}
 
 	return lc_eval;
