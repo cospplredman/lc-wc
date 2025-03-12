@@ -1,7 +1,7 @@
 let lc_print;
 
 let lc_eval = (() => {
-	let step_machine = (fn) => (nxt) => (x) => {
+	let step_machine = (fn) => (x) => {
 		let stack, arg;
 
 		let ret = (x) => arg = x;
@@ -18,7 +18,7 @@ let lc_eval = (() => {
 	}
 
 	let stack_machine = (fn) => (nxt) => (x) => {
-		let step = step_machine(fn)(nxt)(x);
+		let step = step_machine(fn)(x);
 		let arg;
 		while((arg = step()).length == 0);
 		return nxt(arg);
@@ -183,7 +183,7 @@ let lc_eval = (() => {
 				}
 
 				if(ret.length){
-					next(...ret);
+					next(ret[0]);
 				}else{
 					requestAnimationFrame(eval_loop);
 				}
@@ -193,10 +193,10 @@ let lc_eval = (() => {
 		}
 
 
-		runner(step_machine(lc_grammar(End))(I) ([to_cl(str), []]), die, (state) => 
-			state
-				? runner(step_machine(lc_normal)(I)(state[1][0](env)), die, end)
-				: end(null));
+		runner(step_machine(lc_grammar(End)) ([to_cl(str), []]), die, (state, error) => 
+			state != null
+				? runner(step_machine(lc_normal)(state[1][0](env)), die, end)
+				: end(null, error ?? "unable to parse\n"));
 	}
 
 	return lc_eval;

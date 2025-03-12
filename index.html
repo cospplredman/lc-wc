@@ -36,7 +36,7 @@ document.body = un_cps(Body(
 					lc_eval(src, () => state == 0, (result, error) => {
 						state = 0;
 						if(result == null)
-							lc_print(error ?? "unable to parse\n");
+							lc_print(error);
 						else
 							lc_print(result.toString() + "\n");
 
